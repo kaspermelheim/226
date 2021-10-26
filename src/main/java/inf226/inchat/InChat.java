@@ -97,7 +97,7 @@ public class InChat {
     }
     
     /**
-     * Register a new user.
+     * Register a new user. 1
      */
     public Maybe<Stored<Session>> register(final String username,
                                            final String password) {
