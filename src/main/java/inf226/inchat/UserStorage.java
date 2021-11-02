@@ -88,7 +88,7 @@ public final class UserStorage
             final String name = rs.getString("name");
             final Instant joined = Instant.parse(rs.getString("joined"));
             return (new Stored<User>
-                        (new User(name,joined),id,version));
+                        (new User(new UserName(name),joined),id,version));
         } else {
             throw new DeletedException();
         }

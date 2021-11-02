@@ -2,8 +2,11 @@ package inf226.inchat;
 
 import inf226.storage.*;
 import inf226.util.Maybe;
+import inf226.util.Maybe.NothingException;
 import inf226.util.Util;
 
+import java.security.GeneralSecurityException;
+import java.util.Arrays;
 import java.util.TreeMap;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -31,13 +34,13 @@ public class InChat {
     private final AccountStorage accountStore;
     private final SessionStorage sessionStore;
     private final Map<UUID,List<Consumer<Channel.Event>>> eventCallbacks
-        = new TreeMap<UUID,List<Consumer<Channel.Event>>>();
+            = new TreeMap<UUID,List<Consumer<Channel.Event>>>();
 
     public InChat(UserStorage userStore,
-                  ChannelStorage channelStore,
-                  AccountStorage accountStore,
-                  SessionStorage sessionStore,
-                  Connection     connection) {
+            ChannelStorage channelStore,
+            AccountStorage accountStore,
+            SessionStorage sessionStore,
+            Connection     connection) {
         this.userStore=userStore;
         this.channelStore=channelStore;
         this.eventStore=channelStore.eventStore;
@@ -53,7 +56,7 @@ public class InChat {
      */
     @FunctionalInterface
     private interface Operation<T,E extends Throwable> {
-        void run(final Consumer<T> result) throws E,DeletedException;
+        void run(final Consumer<T> result) throws E, DeletedException, Maybe.NothingException, GeneralSecurityException;
     }
     /**
      * Execute an operation atomically in SQL.
@@ -70,6 +73,10 @@ public class InChat {
                 System.err.println(e.toString());
             }catch (DeletedException e) {
                 System.err.println(e.toString());
+            }catch(Maybe.NothingException e) {
+                System.err.println(e.toString());
+            }catch(GeneralSecurityException e) {
+                System.err.println(e.toString());
             }
             try {
                 connection.rollback();
@@ -83,105 +90,113 @@ public class InChat {
     /**
      * Log in a user to the chat.
      */
-    public Maybe<Stored<Session>> login(final String username,
-                                        final String password) {
+    public Maybe<Stored<Session>> login(String username, String password) {
+        // Here you can implement login.
         return atomic(result -> {
-            final Stored<Account> account = accountStore.lookup(username);
-            final Stored<Session> session =
-                sessionStore.save(new Session(account, Instant.now().plusSeconds(60*60*24)));
-            // Check that password is not incorrect and not too long.
-            if (!(!account.value.password.equals(password) && !(password.length() > 1000))) {
-                result.accept(session);
-            }
+                final Stored<Account> account = accountStore.lookup(username);
+                final Stored<Session> session =
+                        sessionStore.save(new Session(account, Instant.now().plusSeconds(60*60*24)));
+                try {
+                    // Check that password is not incorrect and not too long.
+                    if (account.value.checkPassword(password)) {
+                        result.accept(session);
+                    }
+                }catch (Exception e) {
+                    e.printStackTrace();
+                }
         });
     }
-    
+
     /**
      * Register a new user.
      */
     public Maybe<Stored<Session>> register(final String username,
-                                           final String password) {
+            final String password) {
         return atomic(result -> {
-            final Stored<User> user =
-                userStore.save(User.create(username));
-            final Stored<Account> account =
-                accountStore.save(Account.create(user, password));
-            final Stored<Session> session =
-                sessionStore.save(new Session(account, Instant.now().plusSeconds(60*60*24)));
-            result.accept(session); 
+            try {
+                final Stored<User> user =
+                        userStore.save(User.create(username));
+                final Maybe<Password> newPass = Password.createPassReg(password);
+                final Stored<Account> account =
+                        accountStore.save(Account.create(user, newPass, Arrays.toString(newPass.get().salt)));
+                final Stored<Session> session =
+                        sessionStore.save(new Session(account, Instant.now().plusSeconds(60 * 60 * 24)));
+                result.accept(session);
+            }catch (Exception e) {
+                e.printStackTrace();
+            }
         });
     }
-    
+
     /**
      * Restore a previous session.
      */
     public Maybe<Stored<Session>> restoreSession(UUID sessionId) {
         return atomic(result ->
-            result.accept(sessionStore.get(sessionId))
-        );
+                result.accept(sessionStore.get(sessionId)));
     }
-    
+
     /**
      * Log out and invalidate the session.
      */
     public void logout(Stored<Session> session) {
         atomic(result ->
-            Util.deleteSingle(session,sessionStore));
+                Util.deleteSingle(session,sessionStore));
     }
-    
+
     /**
      * Create a new channel.
      */
     public Maybe<Stored<Channel>> createChannel(Stored<Account> account,
-                                                String name) {
+            String name) {
         return atomic(result -> {
             Stored<Channel> channel
-                = channelStore.save(new Channel(name,List.empty()));
+                    = channelStore.save(new Channel(name,List.empty()));
             joinChannel(account, channel.identity);
             result.accept(channel);
         });
     }
-    
+
     /**
      * Join a channel.
      */
     public Maybe<Stored<Channel>> joinChannel(Stored<Account> account,
-                                              UUID channelID) {
+            UUID channelID) {
         return atomic(result -> {
             Stored<Channel> channel = channelStore.get(channelID);
             Util.updateSingle(account,
-                              accountStore,
-                              a -> a.value.joinChannel(channel.value.name,channel));
+                    accountStore,
+                    a -> a.value.joinChannel(channel.value.name,channel));
             Stored<Channel.Event> joinEvent
-                = channelStore.eventStore.save(
+                    = channelStore.eventStore.save(
                     Channel.Event.createJoinEvent(channelID,
-                        Instant.now(),
-                        account.value.user.value.name));
+                            Instant.now(),
+                            account.value.user.value.name.name));
             result.accept(
-                Util.updateSingle(channel,
-                                  channelStore,
-                                  c -> c.value.postEvent(joinEvent)));
+                    Util.updateSingle(channel,
+                            channelStore,
+                            c -> c.value.postEvent(joinEvent)));
         });
     }
-    
+
     /**
      * Post a message to a channel.
      */
     public Maybe<Stored<Channel>> postMessage(Stored<Account> account,
-                                              Stored<Channel> channel,
-                                              String message) {
+            Stored<Channel> channel,
+            String message) {
         return atomic(result -> {
             Stored<Channel.Event> event
-                = channelStore.eventStore.save(
+                    = channelStore.eventStore.save(
                     Channel.Event.createMessageEvent(channel.identity,Instant.now(),
-                        account.value.user.value.name, message));
+                            account.value.user.value.name.name, message));
             result.accept (
-                Util.updateSingle(channel,
-                                    channelStore,
-                                    c -> c.value.postEvent(event)));
+                    Util.updateSingle(channel,
+                            channelStore,
+                            c -> c.value.postEvent(event)));
         });
     }
-    
+
     /**
      * A blocking call which returns the next state of the channel.
      */
@@ -194,16 +209,16 @@ public class InChat {
             return Maybe.nothing();
         }
     }
-    
+
     /**
      * Get an event by its identity.
      */
     public Maybe<Stored<Channel.Event>> getEvent(UUID eventID) {
         return atomic(result ->
-            result.accept(channelStore.eventStore.get(eventID))
+                result.accept(channelStore.eventStore.get(eventID))
         );
     }
-    
+
     /**
      * Delete an event.
      */
@@ -218,15 +233,14 @@ public class InChat {
      * Edit a message.
      */
     public Stored<Channel> editMessage(Stored<Channel> channel,
-                                       Stored<Channel.Event> event,
-                                       String newMessage) {
+            Stored<Channel.Event> event,
+            String newMessage) {
         return this.<Stored<Channel>>atomic(result -> {
             Util.updateSingle(event,
-                            channelStore.eventStore,
-                            e -> e.value.setMessage(newMessage));
+                    channelStore.eventStore,
+                    e -> e.value.setMessage(newMessage));
             result.accept(channelStore.noChangeUpdate(channel.identity));
         }).defaultValue(channel);
     }
 }
-
 

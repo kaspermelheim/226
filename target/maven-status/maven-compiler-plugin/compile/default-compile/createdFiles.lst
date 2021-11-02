@@ -1,9 +1,11 @@
+inf226\inchat\UserName.class
 inf226\storage\DeletedException.class
 inf226\inchat\EventStorage$1.class
 inf226\inchat\EventStorage.class
 inf226\inchat\SessionStorage.class
 inf226\util\immutable\List$Builder.class
 inf226\inchat\Account.class
+inf226\inchat\Password.class
 inf226\util\immutable\List.class
 inf226\inchat\AccountStorage.class
 inf226\inchat\ChannelStorage.class
