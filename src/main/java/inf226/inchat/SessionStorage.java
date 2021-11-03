@@ -1,5 +1,6 @@
 package inf226.inchat;
 
+import java.security.GeneralSecurityException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -43,9 +44,9 @@ public final class SessionStorage
     @Override
     public synchronized Stored<Session> update(Stored<Session> session,
                                             Session new_session)
-        throws UpdatedException,
+            throws UpdatedException,
             DeletedException,
-            SQLException {
+            SQLException, GeneralSecurityException {
     final Stored<Session> current = get(session.identity);
     final Stored<Session> updated = current.newVersion(new_session);
     if(current.version.equals(session.version)) {
@@ -64,9 +65,9 @@ public final class SessionStorage
    
     @Override
     public synchronized void delete(Stored<Session> session)
-       throws UpdatedException,
-              DeletedException,
-              SQLException {
+            throws UpdatedException,
+            DeletedException,
+            SQLException, GeneralSecurityException {
         final Stored<Session> current = get(session.identity);
         if(current.version.equals(session.version)) {
         String sql =  "DELETE FROM Session WHERE id ='" + session.identity + "'";
@@ -77,8 +78,8 @@ public final class SessionStorage
     }
     @Override
     public Stored<Session> get(UUID id)
-      throws DeletedException,
-             SQLException {
+            throws DeletedException,
+            SQLException, GeneralSecurityException {
         final String sql = "SELECT version,account,expiry FROM Session WHERE id = '" + id.toString() + "'";
         final Statement statement = connection.createStatement();
         final ResultSet rs = statement.executeQuery(sql);

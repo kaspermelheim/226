@@ -1,5 +1,7 @@
 package inf226.storage;
 
+import inf226.util.Maybe.NothingException;
+import java.security.GeneralSecurityException;
 import java.util.function.Consumer;
 import inf226.storage.*;
 
@@ -20,7 +22,7 @@ public interface Storage<T,E extends Exception> {
     *
     * Use this when an object is created.
     **/
-   public Stored<T> save(T value) throws E;
+   public Stored<T> save(T value) throws E, NothingException;
 
    /**
     * Update an already stored object with a new value.
@@ -29,12 +31,12 @@ public interface Storage<T,E extends Exception> {
     * If an UpdatedException is thrown, redo changes with
     * the new version and call update() again.
     **/
-   public Stored<T> update(Stored<T> object, T new_object) throws UpdatedException,DeletedException,E;
+   public Stored<T> update(Stored<T> object, T new_object) throws UpdatedException, DeletedException, E, GeneralSecurityException;
    
    /**
     * Delete an object from the store.
     **/
-   public void delete(Stored<T> object) throws UpdatedException,DeletedException,E;
+   public void delete(Stored<T> object) throws UpdatedException, DeletedException, E, GeneralSecurityException;
 
    /**
     * Get a stored object based on UUID.
@@ -42,6 +44,6 @@ public interface Storage<T,E extends Exception> {
     * Use this if you believe your object might be stale, or
     * to retrieve an object from a serialised reference.
     **/
-    public Stored<T> get(UUID id) throws DeletedException,E;
+    public Stored<T> get(UUID id) throws DeletedException, E, GeneralSecurityException;
 
 }

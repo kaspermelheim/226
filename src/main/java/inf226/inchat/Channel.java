@@ -10,7 +10,7 @@ import java.util.UUID;
 public final class Channel {
     public final String name;
     public final List<Stored<Event>> events;
-    
+
     /**
      * Construct a Channel object from name and events.
      */
@@ -18,14 +18,14 @@ public final class Channel {
         this.name=name;
         this.events=events;
     }
-    
+
     /**
      * Post a new event to the channel.
      */
     public Channel postEvent(Stored<Event> event) {
         return new Channel(name, List.cons(event,events));
     }
-    
+
     /**
      * The Event class represents different kinds of events
      * in a channel, such as "join events" and "message events".
@@ -49,7 +49,7 @@ public final class Channel {
         public final Instant time;
         public final String sender;
         public final String message;
-        
+
         /**
          * Copy constructor
          */
@@ -67,29 +67,29 @@ public final class Channel {
             this.message=message;
         }
         /**
-        * Create a message event, which represents a user writing to the channel.
-        */
+         * Create a message event, which represents a user writing to the channel.
+         */
         public static Event createMessageEvent(UUID channel, Instant time, String sender, String message) {
             return new Event(   channel,
-                                time,
-                                sender,
-                                Event.Type.message,
-                                message);
+                    time,
+                    sender,
+                    Event.Type.message,
+                    message);
         }
         /**
-        * Create a message event, which represents a user joining the channel.
-        */
+         * Create a message event, which represents a user joining the channel.
+         */
         public static Event createJoinEvent(UUID channel,Instant time, String user) {
             return new Event(   channel,
-                                time,
-                                user,
-                                Event.Type.join,
-                                null);
+                    time,
+                    user,
+                    Event.Type.join,
+                    null);
         }
 
         /**
          * Create a new event with a different message.
-         */        
+         */
         public Event setMessage(String message) {
             return new Event(channel,time,sender,type,message);
         }

@@ -1,6 +1,7 @@
 package inf226.util;
 import inf226.util.immutable.List;
 import java.lang.Throwable;
+import java.security.GeneralSecurityException;
 import java.util.function.Function;
 
 import inf226.storage.*;
@@ -35,6 +36,9 @@ public class Util {
             } catch (UpdatedException e) {
                 stored = (Stored<A>)e.newObject;
             }
+              catch (GeneralSecurityException e){
+                  e.printStackTrace();
+              };
         }
     }
     
@@ -47,6 +51,8 @@ public class Util {
                 stored = (Stored<A>)e.newObject;
             } catch (DeletedException e) {
                 return;
+            } catch (GeneralSecurityException e) {
+                e.printStackTrace();
             }
         }
     }
