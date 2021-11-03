@@ -13,7 +13,7 @@ public final class Password {
 	public byte[] salt = new byte[16];
 
 	/**
-	 * Standard constructor that only takes one parameter.
+	 * Standard constructor that only takes one parameter
 	 * @param pass - Password as string.
 	 * @throws IllegalArgumentException - thrown if string password does not meet NIST requirements.
 	 */
