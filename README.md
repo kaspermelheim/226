@@ -11,3 +11,10 @@ Added: response.addHeader("Set-Cookie", "session=" + session.identity.toString()
 in Handler.java so that httpOnly flag is set correctly. When logged in the browser will now tell us that flags are
 sat correctly.
 
+
+Task 2:
+
+Created a method that escapes all html before using the user input. So every user input anywhere on the website will 
+first go through the escapeCode method, and what will be returned will not be interpreted as code.
+If a user inputs <script>alert("Hello")</script>, an alert box will no longer pop up, but the string 
+<script>alert("Hello")</script> will actually be printed out as his message.

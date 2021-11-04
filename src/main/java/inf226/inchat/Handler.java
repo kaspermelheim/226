@@ -17,6 +17,7 @@ import java.util.function.Consumer;
 import java.lang.IllegalArgumentException;
 import java.time.format.DateTimeFormatter;
 import java.time.ZoneId;
+import org.apache.commons.lang3.StringEscapeUtils;
 
 
 import java.sql.DriverManager;
@@ -48,6 +49,15 @@ public class Handler extends AbstractHandler
     private final DateTimeFormatter formatter =
             DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm (z)")
                     .withZone( ZoneId.systemDefault() );
+
+    /**
+     * This method prevent XSS attacks.
+     * @param inp
+     * @return
+     */
+    public static String escapeCode(String inp) {
+        return StringEscapeUtils.escapeHtml4(inp);
+    }
 
 
     /**
@@ -396,7 +406,7 @@ public class Handler extends AbstractHandler
         out.println("<style type=\"text/css\">code{white-space: pre;}</style>");
         out.println("<link rel=\"stylesheet\" href=\"/style.css\">");
 
-        out.println("<title>" + title + "</title>");
+        out.println("<title>" + escapeCode(title) + "</title>");
         out.println("</head>");
     }
 
@@ -491,25 +501,25 @@ public class Handler extends AbstractHandler
             switch(e.value.type) {
                 case message:
                     out.println("<div class=\"entry\">");
-                    out.println("    <div class=\"user\">" + e.value.sender + "</div>");
+                    out.println("    <div class=\"user\">" + escapeCode(e.value.sender) + "</div>");
                     out.println("    <div class=\"text\">" + e.value.message);
                     out.println("    </div>");
                     out.println("    <div class=\"messagecontrols\">");
-                    out.println("        <form style=\"grid-area: delete;\" action=\"/channel/" + channel.value.name + "\" method=\"POST\">");
+                    out.println("        <form style=\"grid-area: delete;\" action=\"/channel/" + escapeCode(channel.value.name) + "\" method=\"POST\">");
                     out.println("        <input type=\"hidden\" name=\"message\" value=\""+ e.identity + "\">");
                     out.println("        <input type=\"submit\" name=\"deletemessage\" value=\"Delete\">");
                     out.println("        </form><form style=\"grid-area: edit;\" action=\"/editMessage\" method=\"POST\">");
                     out.println("        ");
                     out.println("        <input type=\"hidden\" name=\"message\" value=\""+ e.identity + "\">");
-                    out.println("        <input type=\"hidden\" name=\"channelname\" value=\""+ channel.value.name + "\">");
-                    out.println("        <input type=\"hidden\" name=\"originalcontent\" value=\""+ e.value.message + "\">");
+                    out.println("        <input type=\"hidden\" name=\"channelname\" value=\""+ escapeCode(channel.value.name) + "\">");
+                    out.println("        <input type=\"hidden\" name=\"originalcontent\" value=\""+ escapeCode(e.value.message) + "\">");
                     out.println("        <input type=\"submit\" name=\"editmessage\" value=\"Edit\">");
                     out.println("        </form>");
                     out.println("    </div>");
                     out.println("</div>");
                     return;
                 case join:
-                    out.println("<p>" + formatter.format(e.value.time) + " " + e.value.sender + " has joined!</p>");
+                    out.println("<p>" + formatter.format(e.value.time) + " " + escapeCode(e.value.sender) + " has joined!</p>");
                     return;
             }
         });

@@ -17,6 +17,7 @@ import java.sql.Connection;
 
 
 import inf226.util.immutable.List;
+import org.eclipse.jetty.server.handler.HandlerList;
 
 /**
  * This class models the chat logic.
@@ -93,12 +94,12 @@ public class InChat {
     public Maybe<Stored<Session>> login(String username, String password) {
         // Here you can implement login.
         return atomic(result -> {
-                final Stored<Account> account = accountStore.lookup(username);
+                final Stored<Account> account = accountStore.lookup(Handler.escapeCode(username));
                 final Stored<Session> session =
                         sessionStore.save(new Session(account, Instant.now().plusSeconds(60*60*24)));
                 try {
                     // Check that password is not incorrect and not too long.
-                    if (account.value.checkPassword(password)) {
+                    if (account.value.checkPassword(Handler.escapeCode(password))) {
                         result.accept(session);
                     }
                 }catch (Exception e) {
@@ -115,8 +116,8 @@ public class InChat {
         return atomic(result -> {
             try {
                 final Stored<User> user =
-                        userStore.save(User.create(username));
-                final Maybe<Password> newPass = Password.createPassReg(password);
+                        userStore.save(User.create(Handler.escapeCode(Handler.escapeCode(username))));
+                final Maybe<Password> newPass = Password.createPassReg(Handler.escapeCode(password));
                 final Stored<Account> account =
                         accountStore.save(Account.create(user, newPass, Arrays.toString(newPass.get().salt)));
                 final Stored<Session> session =
@@ -151,7 +152,7 @@ public class InChat {
             String name) {
         return atomic(result -> {
             Stored<Channel> channel
-                    = channelStore.save(new Channel(name,List.empty()));
+                    = channelStore.save(new Channel(Handler.escapeCode(name),List.empty()));
             joinChannel(account, channel.identity);
             result.accept(channel);
         });
@@ -171,7 +172,7 @@ public class InChat {
                     = channelStore.eventStore.save(
                     Channel.Event.createJoinEvent(channelID,
                             Instant.now(),
-                            account.value.user.value.name.name));
+                            Handler.escapeCode(account.value.user.value.name.name)));
             result.accept(
                     Util.updateSingle(channel,
                             channelStore,
@@ -189,7 +190,7 @@ public class InChat {
             Stored<Channel.Event> event
                     = channelStore.eventStore.save(
                     Channel.Event.createMessageEvent(channel.identity,Instant.now(),
-                            account.value.user.value.name.name, message));
+                            account.value.user.value.name.name, Handler.escapeCode(message)));
             result.accept (
                     Util.updateSingle(channel,
                             channelStore,
@@ -238,7 +239,7 @@ public class InChat {
         return this.<Stored<Channel>>atomic(result -> {
             Util.updateSingle(event,
                     channelStore.eventStore,
-                    e -> e.value.setMessage(newMessage));
+                    e -> e.value.setMessage(Handler.escapeCode(newMessage)));
             result.accept(channelStore.noChangeUpdate(channel.identity));
         }).defaultValue(channel);
     }
