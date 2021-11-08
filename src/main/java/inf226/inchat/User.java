@@ -15,6 +15,7 @@ public final class User {
         this.joined = joined;
     }
 
+
     /**
      * Create a new user.
      */
