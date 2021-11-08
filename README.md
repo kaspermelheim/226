@@ -7,9 +7,14 @@ When trying to register the program will only accept passwords that meet NIST cr
 will check if the password is infact stored in our database. 
 
 Part C:
-Added: response.addHeader("Set-Cookie", "session=" + session.identity.toString() + "; HttpOnly; SameSite=strict");
-in Handler.java so that httpOnly flag is set correctly. When logged in the browser will now tell us that flags are
-sat correctly.
+Added in Handler.handle():
+
+Cookie sc = new Cookie("session",session.identity.toString());
+sc.setSecure(true);
+response.addCookie(sc);
+response.addHeader("Set-Cookie", "key=value; HttpOnly; SameSite=strict");
+
+When logged in the browser will now tell us that flags are sat correctly.
 
 
 Task 2:
