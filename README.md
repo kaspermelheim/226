@@ -11,6 +11,9 @@ Added: response.addHeader("Set-Cookie", "session=" + session.identity.toString()
 in Handler.java so that httpOnly flag is set correctly. When logged in the browser will now tell us that flags are
 sat correctly.
 
+Task 1:
+
+Made all SQL statements to PreparedStatements in AccountStorage, ChannelStorage, EventStorage, SessionStorage and UserStorage.
 
 Task 2:
 
