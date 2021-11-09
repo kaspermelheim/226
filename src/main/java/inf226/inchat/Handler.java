@@ -56,7 +56,7 @@ public class Handler extends AbstractHandler
      * @return
      */
     public static String escapeCode(String inp) {
-        return StringEscapeUtils.escapeHtml4(inp);
+    	return StringEscapeUtils.escapeHtml4(inp);
     }
 
 
@@ -147,10 +147,14 @@ public class Handler extends AbstractHandler
             final Stored<Account> account = session.value.account;
             // User is now logged in with a valid sesion.
             // We set the session cookie to keep the user logged in:
-            // response.addCookie(new Cookie("session",session.identity.toString()));
+            //response.addCookie(new Cookie("session",session.identity.toString()));
 
-            // Add correct parameters to addHeader to make sure flags are set correctly
-            response.addHeader("Set-Cookie", "session=" + session.identity.toString() + "; HttpOnly; SameSite=strict");
+            //Cookie set correctly with headers
+            Cookie sc = new Cookie("session",session.identity.toString());
+            sc.setSecure(true);
+            response.addCookie(sc);
+            response.addHeader("Set-Cookie", "key=value; HttpOnly; SameSite=strict");
+
 
             final PrintWriter out = response.getWriter();
             // Handle a logged in request.
@@ -162,32 +166,40 @@ public class Handler extends AbstractHandler
                     // Resolve channel within the current session
                     Stored<Channel> channel =
                             Util.lookup(account.value.channels,alias).get();
-                    if(request.getMethod().equals("POST")) {
-                        // This is a request to post something in the channel.
+                    if(!inchat.isBanned(channel.value, account.value.user.value)) {
+                        if (request.getMethod().equals("POST")) {
+                            // This is a request to post something in the channel.
 
-                        if(request.getParameter("newmessage") != null) {
-                            String message = (new Maybe<String>
-                                    (request.getParameter("message"))).get();
-                            channel = inchat.postMessage(account,channel,message).get();
+                            if (request.getParameter("newmessage") != null) {
+                                String message = (new Maybe<String>
+                                        (request.getParameter("message"))).get();
+                                channel = inchat.postMessage(account, channel, message).get();
+                            }
+
+                            if (request.getParameter("deletemessage") != null) {
+                                UUID messageId =
+                                        UUID.fromString(Maybe.just(request.getParameter("message")).get());
+                                Stored<Channel.Event> message = inchat.getEvent(messageId).get();
+                                channel = inchat.deleteEvent(channel, message, account);
+                            }
+                            if (request.getParameter("editmessage") != null) {
+                                String message = (new Maybe<String>
+                                        (request.getParameter("content"))).get();
+                                UUID messageId =
+                                        UUID.fromString(Maybe.just(request.getParameter("message")).get());
+                                Stored<Channel.Event> event = inchat.getEvent(messageId).get();
+                                channel = inchat.editMessage(channel, event, message, account);
+                            }
+                            if (request.getParameter("setpermission") != null && inchat.isOwner(channel.value, account.value.user.value)) {
+                                String username = (new Maybe<String>(request.getParameter("username"))).get();
+                                User u = inchat.getUser(username);
+                                String roleName = (new Maybe<String>(request.getParameter("role"))).get();
+                                System.out.println(roleName);
+                                Role r = Role.convert(roleName);
+
+                                inchat.setRole(channel.value, u, r);
+                            }
                         }
-
-                        if(request.getParameter("deletemessage") != null) {
-                            UUID messageId =
-                                    UUID.fromString(Maybe.just(request.getParameter("message")).get());
-                            Stored<Channel.Event> message = inchat.getEvent(messageId).get();
-                            channel = inchat.deleteEvent(channel, message);
-                        }
-                        if(request.getParameter("editmessage") != null) {
-                            String message = (new Maybe<String>
-                                    (request.getParameter("content"))).get();
-                            UUID messageId =
-                                    UUID.fromString(Maybe.just(request.getParameter("message")).get());
-                            Stored<Channel.Event> event = inchat.getEvent(messageId).get();
-                            channel = inchat.editMessage(channel, event, message);
-                        }
-
-                        // TODO: Handle requests to change user roles on channel.
-
                     }
 
                     out.println("<!DOCTYPE html>");
@@ -430,7 +442,10 @@ public class Handler extends AbstractHandler
         out.println("<p>Your channels:</p>");
         out.println("<ul class=\"chanlist\">");
         account.channels.forEach( entry -> {
-            out.println("<li> <a href=\"/channel/" + entry.first + "\">" + entry.first + "</a></li>");
+            //Hide channel in channel list if user is banned
+            if(!inchat.isBanned(entry.second.value, account.user.value)) {
+                out.println("<li> <a href=\"/channel/" + entry.first + "\">" + entry.first + "</a></li>");
+            }
         });
         out.println("</ul>");
         out.println("</aside>");
