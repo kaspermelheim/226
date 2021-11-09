@@ -28,6 +28,10 @@ first go through the escapeCode method, and what will be returned will not be in
 If a user now tries to input a script that runs an alert box, the alert box will no longer appear. Instead, the actual
 code will be printed as String as a message, and not ran as code on the website.
 
+## Task 3:
+
+
+
 ## Task 4:
 
 Created enum class Role that holds all types of roles. Added many new methods in InChat that checks if a user has
@@ -51,6 +55,7 @@ We noticed that a user could register even if he typed in two different password
 This has now been fixed and a user can only register if the two passwords are correct.
 
 The admin account and debug channel have been removed as they were insecure to have if anyone would gain access to the source code or try to find the account.
+The debugging should either way not be happening in the production application.
 
 The colors and design that was there already can be harmful to people interested in design or with severe OCD, so we
 also made some changes to that to improve the experience for them.
