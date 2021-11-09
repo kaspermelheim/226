@@ -20,7 +20,6 @@
     <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-http:9.4.9.v20180320" level="project" />
     <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-util:9.4.9.v20180320" level="project" />
     <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-io:9.4.9.v20180320" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.commons:commons-lang3:3.4" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.junit.jupiter:junit-jupiter-api:5.4.2" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.apiguardian:apiguardian-api:1.0.0" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.opentest4j:opentest4j:1.1.1" level="project" />
@@ -29,5 +28,6 @@
     <orderEntry type="library" scope="TEST" name="Maven: org.junit.platform:junit-platform-engine:1.4.2" level="project" />
     <orderEntry type="library" name="Maven: org.xerial:sqlite-jdbc:3.28.0" level="project" />
     <orderEntry type="library" name="Maven: com.lambdaworks:scrypt:1.4.0" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.commons:commons-lang3:3.4" level="project" />
   </component>
 </module>

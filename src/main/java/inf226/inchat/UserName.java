@@ -14,6 +14,10 @@ public final class UserName {
 		return name;
 	}
 
+	public String getName() {
+		return name;
+	}
+
 	/**
 	 * Check if username already exists.
 	 * @param userStore
