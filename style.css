@@ -1,12 +1,13 @@
 body{
     margin: 0 auto;
     font-family: Georgia, Palatino, serif;
-    color: #040404;
+    color: black;
     line-height: 1;
     max-width: 50em;
     padding: 30px;
     text-align: justify;
     border-radius: 1em;
+    background-color: #fdffe3;
 }
 
 .thread-head {
@@ -91,8 +92,19 @@ header {
    padding: 0.8em 0.8em 0.5em 0.8em;
    border-top-left-radius: 1em;
    border-top-right-radius: 1em;
-   background-color: #88bbff;
-   color: #040404;
+   background-color: #67699c;
+   color: #181a54;
+}
+
+.topic2 {
+	grid-area: topic;
+   margin: 0;
+   padding: 0.8em 0.8em 0.5em 0.8em;
+   border-bottom-left-radius: 1em;
+   border-bottom-right-radius: 1em;
+   background-color: #67699c;
+   color: #181a54;
+   font-size: 20px;
 }
 
 .actionbar {
@@ -199,25 +211,28 @@ p {
 }
 
 a {
-    color: #0066CC;
-    margin: 0;
-    padding: 0;
-    vertical-align: baseline;
-    text-decoration: none;
+    background-color: #67699c;
+      border-radius: 5px;
+      color: white;
+
+      padding: 16px 32px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      margin: 4px 2px;
+      transition-duration: 0.4s;
+      cursor: pointer;
 }
 
 a:hover {
     text-decoration: none;
-    color: #CC0000;
-}
-a:visited {
-    color: #6633FF;
+    color: #;
+    background-color: #9193c9;
 }
 
-a:after {
-  content: "";
-  font-size: small;
-}
+
+
 
 ul, ol {
     padding: 0;

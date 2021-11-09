@@ -40,3 +40,11 @@ A banned user will not be able to perform events in the channel anymore, and the
 their channel list.
 
 We also added functionality to the dropdown menu for roles, this was fixed in the Handler class.
+
+Task 5:
+
+We noticed that a user could register even if he typed in two different passwords in the registration form.
+This has now been fixed and a user can only register if the two passwords are correct.
+
+The colors and design that was there already can be harmful to people interested in design or with severe OCD, so we
+also made some changes to that to improve the experience for them.

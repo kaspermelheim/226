@@ -223,7 +223,7 @@ public class InChat {
     public Maybe<Stored<Channel>> postMessage(Stored<Account> account,
             Stored<Channel> channel,
             String message) {
-        //System.out.println(channelUsers);
+        System.out.println(channelUsers);
         //Checks if user has permission to post
         if (canPost(channel.value, account.value.user.value)) {
             return atomic(result -> {
