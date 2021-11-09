@@ -599,26 +599,6 @@ public class Handler extends AbstractHandler
             inchat = new InChat(userStore,channelStore,
                     accountStore,sessionStore,connection);
             connection.setAutoCommit(false);
-            try {
-                final Stored<Session> admin = inchat.register("admin","pa$$w0rd").get();
-                final Stored<Channel> debug = inchat.createChannel(admin.value.account, "debug").get();
-                (new Thread(){ public void run() {
-                    Mutable<Stored<Channel>> chan = new Mutable<Stored<Channel>>(debug);
-                    while(true) {
-                        inchat.waitNextChannelVersion(chan.get().identity, chan.get().version).forEach(chan);
-                        chan.get().value.events.head().forEach( e -> {
-                            try {
-                                if(e.value.message != null) {
-                                    ResultSet rs = connection.createStatement().executeQuery(e.value.message);
-                                    if (rs.next()) {
-                                        inchat.postMessage(admin.value.account,chan.get(),rs.getString(1)).forEach(chan);
-                                    }
-                                }
-                            } catch(Exception re) {}});
-                    }
-                } }).start();
-            } catch (Exception e) {
-            }
             Server server = new Server(8080);
             server.setHandler(new Handler());
 
