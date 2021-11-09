@@ -106,13 +106,21 @@ public class Handler extends AbstractHandler
                         (request.getParameter("username"))).get();
                 String password = (new Maybe<String>
                         (request.getParameter("password"))).get();
-                System.err.println("Registering user: \"" + username
-                        + "\" with password \"" + password + "\"");
+                String password2 = (new Maybe<String>
+                        (request.getParameter("password_repeat"))).get();
 
+                //Check if the two passwords match
+                System.out.println(password2 + " + " + password);
+                if(password.equals(password2)) {
+                    System.err.println("Registering user: \"" + username
+                            + "\" with password \"" + password + "\"");
 
-                inchat.register(username,password).forEach(sessionBuilder);
+                    inchat.register(username, password).forEach(sessionBuilder);
+                }else {
+                    System.err.println("Password does not match.");
+                }
             } catch (Maybe.NothingException e) {
-                // Not enough data suppied for login
+                // Not enough data supplied for login
                 System.err.println("Broken usage of register");
             }
         } else if(request.getParameter("login") != null) {
