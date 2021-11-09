@@ -16,6 +16,9 @@ response.addHeader("Set-Cookie", "key=value; HttpOnly; SameSite=strict");
 
 When logged in the browser will now tell us that flags are sat correctly.
 
+Task 1:
+
+Made all SQL statements to PreparedStatements in AccountStorage, ChannelStorage, EventStorage, SessionStorage and UserStorage.
 
 Task 2:
 
