@@ -1,12 +1,12 @@
-inf226 Mandatory 3
+# INF226 Mandatory 3
 
-Task 0, part A,B:
+## Task 0, part A,B:
 
 Created two new immutable classes Password and UserName. Using SCrypt, we now store passwords safely using salt.
 When trying to register the program will only accept passwords that meet NIST criteria. When logging in the program
 will check if the password is infact stored in our database. 
 
-Part C:
+## Part C:
 Added in Handler.handle():
 
 Cookie sc = new Cookie("session",session.identity.toString());
@@ -16,18 +16,23 @@ response.addHeader("Set-Cookie", "key=value; HttpOnly; SameSite=strict");
 
 When logged in the browser will now tell us that flags are sat correctly.
 
-Task 1:
+## Task 1:
 
 Made all SQL statements to PreparedStatements in AccountStorage, ChannelStorage, EventStorage, SessionStorage and UserStorage.
+SQL-injection warnings no longer showing up on our SonarQube and OWASP ZAP scans.
 
-Task 2:
+## Task 2:
 
 Created a method that escapes all html before using the user input. So every user input anywhere on the website will 
 first go through the escapeCode method, and what will be returned will not be interpreted as code.
 If a user now tries to input a script that runs an alert box, the alert box will no longer appear. Instead, the actual
 code will be printed as String as a message, and not ran as code on the website.
 
-Task 4:
+## Task 3:
+
+
+
+## Task 4:
 
 Created enum class Role that holds all types of roles. Added many new methods in InChat that checks if a user has
 permission to perform certain tasks (isOwner, isBanned, canPost etc.). 
@@ -44,10 +49,13 @@ their channel list.
 
 We also added functionality to the dropdown menu for roles, this was fixed in the Handler class.
 
-Task 5:
+## Task 5:
 
 We noticed that a user could register even if he typed in two different passwords in the registration form.
 This has now been fixed and a user can only register if the two passwords are correct.
+
+The admin account and debug channel have been removed as they were insecure to have if anyone would gain access to the source code or try to find the account.
+The debugging should either way not be happening in the production application.
 
 The colors and design that was there already can be harmful to people interested in design or with severe OCD, so we
 also made some changes to that to improve the experience for them.
