@@ -1,9 +1,6 @@
 package inf226.inchat;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.time.Instant;
 import java.util.UUID;
 import java.util.TreeMap;
@@ -33,20 +30,22 @@ public final class ChannelStorage
       throws SQLException {
         this.connection = connection;
         this.eventStore = new EventStorage(connection);
-        
-        connection.createStatement()
-                .executeUpdate("CREATE TABLE IF NOT EXISTS Channel (id TEXT PRIMARY KEY, version TEXT, name TEXT)");
+        final PreparedStatement sql = connection.prepareStatement("CREATE TABLE IF NOT EXISTS Channel (id TEXT PRIMARY KEY, version TEXT, name TEXT)");
+        sql.executeUpdate();
     }
+
     
     @Override
     public Stored<Channel> save(Channel channel)
       throws SQLException {
-        
+
+
         final Stored<Channel> stored = new Stored<Channel>(channel);
-        String sql =  "INSERT INTO Channel VALUES('" + stored.identity + "','"
-                                                  + stored.version  + "','"
-                                                  + channel.name  + "')";
-        connection.createStatement().executeUpdate(sql);
+        final PreparedStatement sql = connection.prepareStatement("INSERT INTO Channel VALUES (?,?,?)");
+        sql.setObject(1,stored.identity);
+        sql.setObject(2,stored.version);
+        sql.setObject(3,channel.name);
+        sql.executeUpdate();
         return stored;
     }
     
@@ -59,14 +58,11 @@ public final class ChannelStorage
         final Stored<Channel> current = get(channel.identity);
         final Stored<Channel> updated = current.newVersion(new_channel);
         if(current.version.equals(channel.version)) {
-            String sql = "UPDATE Channel SET" +
-                " (version,name) =('" 
-                                + updated.version  + "','"
-                                + new_channel.name
-                                + "') WHERE id='"+ updated.identity + "'";
-            connection.createStatement().executeUpdate(sql);
-        } else {
-            throw new UpdatedException(current);
+            final PreparedStatement sql = connection.prepareStatement("UPDATE Channel SET (version,name) = (?,?) WHERE id=?");
+            sql.setObject(1,updated.version);
+            sql.setObject(2,new_channel.name);
+            sql.setObject(3,updated.identity);
+            sql.executeUpdate();
         }
         giveNextVersion(updated);
         return updated;
@@ -79,8 +75,9 @@ public final class ChannelStorage
               SQLException {
         final Stored<Channel> current = get(channel.identity);
         if(current.version.equals(channel.version)) {
-        String sql =  "DELETE FROM Channel WHERE id ='" + channel.identity + "'";
-        connection.createStatement().executeUpdate(sql);
+            final PreparedStatement sql = connection.prepareStatement("DELETE FROM Channel WHERE id=?");
+            sql.setObject(1,channel.identity);
+            sql.executeUpdate();
         } else {
         throw new UpdatedException(current);
         }
@@ -90,14 +87,15 @@ public final class ChannelStorage
       throws DeletedException,
              SQLException {
 
-        final String channelsql = "SELECT version,name FROM Channel WHERE id = '" + id.toString() + "'";
-        final String eventsql = "SELECT id,rowid FROM Event WHERE channel = '" + id.toString() + "' ORDER BY rowid ASC";
 
-        final Statement channelStatement = connection.createStatement();
-        final Statement eventStatement = connection.createStatement();
+        final PreparedStatement channelsql = connection.prepareStatement("SELECT version,name FROM Channel WHERE id=?");
+        final PreparedStatement eventsql = connection.prepareStatement("SELECT id,rowid FROM Event WHERE channel=? ORDER BY rowid ASC");
 
-        final ResultSet channelResult = channelStatement.executeQuery(channelsql);
-        final ResultSet eventResult = eventStatement.executeQuery(eventsql);
+        channelsql.setString(1,id.toString());
+        eventsql.setString(1,id.toString());
+
+        final ResultSet channelResult = channelsql.executeQuery();
+        final ResultSet eventResult = eventsql.executeQuery();
 
         if(channelResult.next()) {
             final UUID version = 
@@ -123,9 +121,11 @@ public final class ChannelStorage
      */
     public Stored<Channel> noChangeUpdate(UUID channelId)
         throws SQLException, DeletedException {
-        String sql = "UPDATE Channel SET" +
-                " (version) =('" + UUID.randomUUID() + "') WHERE id='"+ channelId + "'";
-        connection.createStatement().executeUpdate(sql);
+        final PreparedStatement sql = connection.prepareStatement("UPDATE Channel SET (version) = (?) WHERE id=?");
+        sql.setObject(1, UUID.randomUUID());
+        sql.setObject(2,channelId);
+        sql.executeUpdate();
+
         Stored<Channel> channel = get(channelId);
         giveNextVersion(channel);
         return channel;
@@ -139,10 +139,10 @@ public final class ChannelStorage
       throws DeletedException,
              SQLException {
 
-        final String channelsql = "SELECT version FROM Channel WHERE id = '" + id.toString() + "'";
-        final Statement channelStatement = connection.createStatement();
+        final PreparedStatement channelsql = connection.prepareStatement("SELECT version FROM Channel WHERE id=?");
+        channelsql.setString(1,id.toString());
 
-        final ResultSet channelResult = channelStatement.executeQuery(channelsql);
+        final ResultSet channelResult = channelsql.executeQuery();
         if(channelResult.next()) {
             return UUID.fromString(
                     channelResult.getString("version"));
@@ -215,8 +215,9 @@ public final class ChannelStorage
      */
     public Stored<Channel> lookupChannelForEvent(Stored<Channel.Event> e)
       throws SQLException, DeletedException {
-        String sql = "SELECT channel FROM ChannelEvent WHERE event='" + e.identity + "'";
-        final ResultSet rs = connection.createStatement().executeQuery(sql);
+        final PreparedStatement sql = connection.prepareStatement("SELECT channel FROM ChannelEvent WHERE event=?");
+        sql.setObject(1,e.identity);
+        final ResultSet rs = sql.executeQuery();
         if(rs.next()) {
             final UUID channelId = UUID.fromString(rs.getString("channel"));
             return get(channelId);
