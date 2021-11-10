@@ -177,7 +177,9 @@ public class Handler extends AbstractHandler
                     if(!inchat.isBanned(channel.value, account.value.user.value)) {
                         if (request.getMethod().equals("POST")) {
                             if(!(request.getParameter("csrfToken") == session.identity.toString())) {
-                                System.err.println("CSRF-token not matched!");
+                                response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
+                                response.setHeader("Location","/");
+                                baseRequest.setHandled(true);
 
                             }
                             // This is a request to post something in the channel.

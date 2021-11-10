@@ -29,6 +29,8 @@ If a user now tries to input a script that runs an alert box, the alert box will
 code will be printed as String as a message, and not ran as code on the website.
 
 ## Task 3:
+Added CSRF-tokens to every input statement in handler. If the CSRF-token dont 
+match the session id then you are loged out. 
 
 
 
