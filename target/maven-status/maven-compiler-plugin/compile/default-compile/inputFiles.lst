@@ -1,24 +1,24 @@
-C:\Users\Kasper\OneDrive - University of Bergen\Documents\UIB_Projects\Sem5\INF226\Mnadatory3\inf226-2021-inchat\src\main\java\inf226\inchat\EventStorage.java
-C:\Users\Kasper\OneDrive - University of Bergen\Documents\UIB_Projects\Sem5\INF226\Mnadatory3\inf226-2021-inchat\src\main\java\inf226\util\immutable\List.java
-C:\Users\Kasper\OneDrive - University of Bergen\Documents\UIB_Projects\Sem5\INF226\Mnadatory3\inf226-2021-inchat\src\main\java\inf226\inchat\Session.java
-C:\Users\Kasper\OneDrive - University of Bergen\Documents\UIB_Projects\Sem5\INF226\Mnadatory3\inf226-2021-inchat\src\main\java\inf226\storage\Stored.java
-C:\Users\Kasper\OneDrive - University of Bergen\Documents\UIB_Projects\Sem5\INF226\Mnadatory3\inf226-2021-inchat\src\main\java\inf226\inchat\Channel.java
-C:\Users\Kasper\OneDrive - University of Bergen\Documents\UIB_Projects\Sem5\INF226\Mnadatory3\inf226-2021-inchat\src\main\java\inf226\storage\UpdatedException.java
-C:\Users\Kasper\OneDrive - University of Bergen\Documents\UIB_Projects\Sem5\INF226\Mnadatory3\inf226-2021-inchat\src\main\java\inf226\inchat\Handler.java
-C:\Users\Kasper\OneDrive - University of Bergen\Documents\UIB_Projects\Sem5\INF226\Mnadatory3\inf226-2021-inchat\src\main\java\inf226\storage\DeletedException.java
-C:\Users\Kasper\OneDrive - University of Bergen\Documents\UIB_Projects\Sem5\INF226\Mnadatory3\inf226-2021-inchat\src\main\java\inf226\util\Either.java
-C:\Users\Kasper\OneDrive - University of Bergen\Documents\UIB_Projects\Sem5\INF226\Mnadatory3\inf226-2021-inchat\src\main\java\inf226\inchat\SessionStorage.java
-C:\Users\Kasper\OneDrive - University of Bergen\Documents\UIB_Projects\Sem5\INF226\Mnadatory3\inf226-2021-inchat\src\main\java\inf226\inchat\Account.java
-C:\Users\Kasper\OneDrive - University of Bergen\Documents\UIB_Projects\Sem5\INF226\Mnadatory3\inf226-2021-inchat\src\main\java\inf226\util\Pair.java
-C:\Users\Kasper\OneDrive - University of Bergen\Documents\UIB_Projects\Sem5\INF226\Mnadatory3\inf226-2021-inchat\src\main\java\inf226\inchat\UserName.java
-C:\Users\Kasper\OneDrive - University of Bergen\Documents\UIB_Projects\Sem5\INF226\Mnadatory3\inf226-2021-inchat\src\main\java\inf226\storage\Storage.java
-C:\Users\Kasper\OneDrive - University of Bergen\Documents\UIB_Projects\Sem5\INF226\Mnadatory3\inf226-2021-inchat\src\main\java\inf226\util\Maybe.java
-C:\Users\Kasper\OneDrive - University of Bergen\Documents\UIB_Projects\Sem5\INF226\Mnadatory3\inf226-2021-inchat\src\main\java\inf226\util\Util.java
-C:\Users\Kasper\OneDrive - University of Bergen\Documents\UIB_Projects\Sem5\INF226\Mnadatory3\inf226-2021-inchat\src\main\java\inf226\inchat\ChannelStorage.java
-C:\Users\Kasper\OneDrive - University of Bergen\Documents\UIB_Projects\Sem5\INF226\Mnadatory3\inf226-2021-inchat\src\main\java\inf226\util\Mutable.java
-C:\Users\Kasper\OneDrive - University of Bergen\Documents\UIB_Projects\Sem5\INF226\Mnadatory3\inf226-2021-inchat\src\main\java\inf226\inchat\Password.java
-C:\Users\Kasper\OneDrive - University of Bergen\Documents\UIB_Projects\Sem5\INF226\Mnadatory3\inf226-2021-inchat\src\main\java\inf226\inchat\User.java
-C:\Users\Kasper\OneDrive - University of Bergen\Documents\UIB_Projects\Sem5\INF226\Mnadatory3\inf226-2021-inchat\src\main\java\inf226\inchat\InChat.java
-C:\Users\Kasper\OneDrive - University of Bergen\Documents\UIB_Projects\Sem5\INF226\Mnadatory3\inf226-2021-inchat\src\main\java\inf226\inchat\Role.java
-C:\Users\Kasper\OneDrive - University of Bergen\Documents\UIB_Projects\Sem5\INF226\Mnadatory3\inf226-2021-inchat\src\main\java\inf226\inchat\AccountStorage.java
-C:\Users\Kasper\OneDrive - University of Bergen\Documents\UIB_Projects\Sem5\INF226\Mnadatory3\inf226-2021-inchat\src\main\java\inf226\inchat\UserStorage.java
+C:\Users\sverr\OneDrive\Documents\datatek\INF226\inf226-2021-inchat\src\main\java\inf226\storage\Stored.java
+C:\Users\sverr\OneDrive\Documents\datatek\INF226\inf226-2021-inchat\src\main\java\inf226\inchat\Role.java
+C:\Users\sverr\OneDrive\Documents\datatek\INF226\inf226-2021-inchat\src\main\java\inf226\inchat\Session.java
+C:\Users\sverr\OneDrive\Documents\datatek\INF226\inf226-2021-inchat\src\main\java\inf226\inchat\Channel.java
+C:\Users\sverr\OneDrive\Documents\datatek\INF226\inf226-2021-inchat\src\main\java\inf226\inchat\InChat.java
+C:\Users\sverr\OneDrive\Documents\datatek\INF226\inf226-2021-inchat\src\main\java\inf226\inchat\ChannelStorage.java
+C:\Users\sverr\OneDrive\Documents\datatek\INF226\inf226-2021-inchat\src\main\java\inf226\storage\Storage.java
+C:\Users\sverr\OneDrive\Documents\datatek\INF226\inf226-2021-inchat\src\main\java\inf226\inchat\Handler.java
+C:\Users\sverr\OneDrive\Documents\datatek\INF226\inf226-2021-inchat\src\main\java\inf226\inchat\EventStorage.java
+C:\Users\sverr\OneDrive\Documents\datatek\INF226\inf226-2021-inchat\src\main\java\inf226\util\Pair.java
+C:\Users\sverr\OneDrive\Documents\datatek\INF226\inf226-2021-inchat\src\main\java\inf226\util\Either.java
+C:\Users\sverr\OneDrive\Documents\datatek\INF226\inf226-2021-inchat\src\main\java\inf226\util\immutable\List.java
+C:\Users\sverr\OneDrive\Documents\datatek\INF226\inf226-2021-inchat\src\main\java\inf226\inchat\Account.java
+C:\Users\sverr\OneDrive\Documents\datatek\INF226\inf226-2021-inchat\src\main\java\inf226\inchat\AccountStorage.java
+C:\Users\sverr\OneDrive\Documents\datatek\INF226\inf226-2021-inchat\src\main\java\inf226\inchat\SessionStorage.java
+C:\Users\sverr\OneDrive\Documents\datatek\INF226\inf226-2021-inchat\src\main\java\inf226\util\Maybe.java
+C:\Users\sverr\OneDrive\Documents\datatek\INF226\inf226-2021-inchat\src\main\java\inf226\util\Util.java
+C:\Users\sverr\OneDrive\Documents\datatek\INF226\inf226-2021-inchat\src\main\java\inf226\storage\DeletedException.java
+C:\Users\sverr\OneDrive\Documents\datatek\INF226\inf226-2021-inchat\src\main\java\inf226\inchat\Password.java
+C:\Users\sverr\OneDrive\Documents\datatek\INF226\inf226-2021-inchat\src\main\java\inf226\inchat\UserStorage.java
+C:\Users\sverr\OneDrive\Documents\datatek\INF226\inf226-2021-inchat\src\main\java\inf226\inchat\UserName.java
+C:\Users\sverr\OneDrive\Documents\datatek\INF226\inf226-2021-inchat\src\main\java\inf226\inchat\User.java
+C:\Users\sverr\OneDrive\Documents\datatek\INF226\inf226-2021-inchat\src\main\java\inf226\util\Mutable.java
+C:\Users\sverr\OneDrive\Documents\datatek\INF226\inf226-2021-inchat\src\main\java\inf226\storage\UpdatedException.java

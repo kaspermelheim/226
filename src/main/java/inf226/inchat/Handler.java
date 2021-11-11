@@ -176,6 +176,12 @@ public class Handler extends AbstractHandler
                             Util.lookup(account.value.channels,alias).get();
                     if(!inchat.isBanned(channel.value, account.value.user.value)) {
                         if (request.getMethod().equals("POST")) {
+                            if(!(request.getParameter("csrfToken") == session.identity.toString())) {
+                                response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
+                                response.setHeader("Location","/");
+                                baseRequest.setHandled(true);
+
+                            }
                             // This is a request to post something in the channel.
 
                             if (request.getParameter("newmessage") != null) {
@@ -217,7 +223,7 @@ public class Handler extends AbstractHandler
                     printStandardTop(out,  "inChat: " + alias);
                     out.println("<div class=\"main\">");
                     printChannelList(out, account.value, alias);
-                    printChannel(out, channel, alias);
+                    printChannel(out, channel, alias, session.identity);
                     out.println("</div>");
                     out.println("</body>");
                     out.println("</html>");
@@ -234,6 +240,7 @@ public class Handler extends AbstractHandler
                     printStandardTop(out,  "inChat: Create a new channel!");
 
                     out.println("<form class=\"login\" action=\"/\" method=\"POST\">"
+                            + "<div> <input type=\"hidden\" name=\"csrfToken\" value=" + session.identity + "></div>"
                             + "<div class=\"name\"><input type=\"text\" name=\"channelname\" placeholder=\"Channel name\"></div>"
                             + "<div class=\"submit\"><input type=\"submit\" name=\"createchannel\" value=\"Create Channel\"></div>"
                             + "</form>");
@@ -252,6 +259,7 @@ public class Handler extends AbstractHandler
                     printStandardTop(out, "inChat – Join a channel!");
 
                     out.println("<form class=\"login\" action=\"/join\" method=\"POST\">"
+                            + "<div> <input type=\"hidden\" name=\"csrfToken\" value=" + session.identity + "></div>"
                             + "<div class=\"name\"><input type=\"text\" name=\"channelid\" placeholder=\"Channel ID number:\"></div>"
                             + "<div class=\"submit\"><input type=\"submit\" name=\"joinchannel\" value=\"Join channel\"></div>"
                             + "</form>");
@@ -277,6 +285,7 @@ public class Handler extends AbstractHandler
 
                     out.println("<form class=\"entry\" action=\"/channel/" + alias + "\" method=\"post\">");
                     out.println("  <div class=\"user\">You</div>");
+                    out.println("  <input type=\"hidden\" name=\"csrfToken\" value=" + session.identity + ">");
                     out.println("  <input type=\"hidden\" name=\"editmessage\" value=\"Edit\">");
                     out.println("  <input type=\"hidden\" name=\"message\" value=\"" + messageid + "\">");
                     out.println("  <textarea id=\"messageInput\" class=\"messagebox\" placeholder=\"Post a message in this channel!\" name=\"content\">" + originalContent + "</textarea>");
@@ -343,7 +352,7 @@ public class Handler extends AbstractHandler
                     Stored<Channel> channel = inchat.waitNextChannelVersion(identity,version).get();
                     System.err.println("Got a new version.");
                     out.println(channel.version);
-                    printChannelEvents(out,channel);
+                    printChannelEvents(out,channel,session.identity);
                     response.setStatus(HttpServletResponse.SC_OK);
                     baseRequest.setHandled(true);
                     return ;
@@ -464,16 +473,18 @@ public class Handler extends AbstractHandler
      **/
     private void printChannel(PrintWriter out,
             Stored<Channel> channel,
-            String alias) {
+            String alias,
+            UUID csrfToken ) {
 
         out.println("<main id=\"channel\" role=\"main\" class=\"channel\">");
-        printChannelEvents(out,channel);
+        printChannelEvents(out,channel,csrfToken);
         out.println("<script src=\"/script.js\"></script>");
         out.println("<script>subscribe(\"" + channel.identity +"\",\"" + channel.version + "\");</script>");
 
         out.println("<form class=\"entry\" action=\"/channel/" + alias + "\" method=\"post\">");
         out.println("  <div class=\"user\">You</div>");
         out.println("  <input type=\"hidden\" name=\"newmessage\" value=\"Send\">");
+        out.println("  <input type=\"hidden\" name=\"csrfToken\" value=" + csrfToken.toString() + ">");
         out.println("  <textarea id=\"messageInput\" class=\"messagebox\" placeholder=\"Post a message in this channel!\" name=\"message\"></textarea>");
         out.println("  <div class=\"controls\"><input style=\"float: right;\" type=\"submit\" name=\"send\" value=\"Send\"></div>");
         out.println("</form>");
@@ -490,6 +501,7 @@ public class Handler extends AbstractHandler
 
         out.println("<h4>Set permissions</h4><form action=\"/channel/" + alias + "\" method=\"post\">");
         out.println("<input style=\"width: 8em;\" type=\"text\" placeholder=\"User name\" name=\"username\">");
+        out.println("<input type=\"hidden\" name=\"csrfToken\" value=" + csrfToken.toString() + ">");
         out.println("<select name=\"role\" required=\"required\">");
         out.println("<option value=\"owner\">Owner</option>");
         out.println("<option value=\"moderator\">Moderator</option>");
@@ -497,6 +509,7 @@ public class Handler extends AbstractHandler
         out.println("<option value=\"observer\">Observer</option>");
         out.println("<option value=\"banned\">Banned</option>");
         out.println("<input type=\"submit\" name=\"setpermission\" value=\"Set!\">");
+        out.println("<input type=\"hidden\" name=\"csrfToken\" value=" + csrfToken.toString() + ">");
         out.println("</select>");
         out.println("</form>");
 
@@ -507,19 +520,21 @@ public class Handler extends AbstractHandler
      * Render the events of a channel as HTML.
      */
     private void printChannelEvents(PrintWriter out,
-            Stored<Channel> channel) {
+                                    Stored<Channel> channel,
+                                    UUID csrfToken
+                                    ) {
         out.println("<div id=\"chanevents\">");
         channel.value
                 .events
                 .reverse()
-                .forEach(printEvent(out,channel));
+                .forEach(printEvent(out,channel,csrfToken));
         out.println("</div>");
     }
 
     /**
      * Render an event as HTML.
      */
-    private Consumer<Stored<Channel.Event>> printEvent(PrintWriter out, Stored<Channel> channel) {
+    private Consumer<Stored<Channel.Event>> printEvent(PrintWriter out, Stored<Channel> channel, UUID csrfToken) {
         return (e -> {
             switch(e.value.type) {
                 case message:
@@ -531,12 +546,14 @@ public class Handler extends AbstractHandler
                     out.println("        <form style=\"grid-area: delete;\" action=\"/channel/" + escapeCode(channel.value.name) + "\" method=\"POST\">");
                     out.println("        <input type=\"hidden\" name=\"message\" value=\""+ e.identity + "\">");
                     out.println("        <input type=\"submit\" name=\"deletemessage\" value=\"Delete\">");
+                    out.println("        <input type=\"hidden\" name=\"csrfToken\" value=" + csrfToken.toString() + ">");
                     out.println("        </form><form style=\"grid-area: edit;\" action=\"/editMessage\" method=\"POST\">");
                     out.println("        ");
                     out.println("        <input type=\"hidden\" name=\"message\" value=\""+ e.identity + "\">");
                     out.println("        <input type=\"hidden\" name=\"channelname\" value=\""+ escapeCode(channel.value.name) + "\">");
                     out.println("        <input type=\"hidden\" name=\"originalcontent\" value=\""+ escapeCode(e.value.message) + "\">");
                     out.println("        <input type=\"submit\" name=\"editmessage\" value=\"Edit\">");
+                    out.println("        <input type=\"hidden\" name=\"csrfToken\" value=" + csrfToken.toString() + ">");
                     out.println("        </form>");
                     out.println("    </div>");
                     out.println("</div>");
